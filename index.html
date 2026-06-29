@@ -8,21 +8,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#17151d" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>Miya 角色紀念日卡冊 v0.9</title>
+  <title>Miya 角色紀念日卡冊 v0.14</title>
   <style>
     :root{
+      color-scheme: light;
       --bg:#15151b; --panel:#222129; --panel2:#2c2a35; --text:#f7f2f8; --muted:#a9a2b3;
       --accent:#e9a7c6; --accent2:#8b7cf6; --border:rgba(255,255,255,.12);
       --cardShadow: 0 18px 48px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
+    html{background:var(--bg)}
     body{
       margin:0; font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
       background: radial-gradient(circle at top, color-mix(in srgb, var(--accent) 18%, transparent), transparent 38%), var(--bg);
       color:var(--text); min-height:100svh;
     }
     button,input,select{font:inherit}
-    .app{max-width:460px; margin:0 auto; min-height:100svh; padding:18px 18px 28px;}
+    .app{
+      max-width:460px; margin:0 auto; min-height:100svh;
+      padding:calc(18px + env(safe-area-inset-top, 0px)) 18px calc(28px + env(safe-area-inset-bottom, 0px));
+    }
     .topbar{display:flex; align-items:center; justify-content:space-between; margin:8px 0 18px; gap:12px;}
     .title{font-size:24px; font-weight:800; letter-spacing:.04em}
     .sub{color:var(--muted); font-size:13px; margin-top:3px}
@@ -69,15 +74,19 @@
       min-height:185px;
       padding:10px 18px 26px;
     }
-    .hero img.cover{width:100%;height:100%;object-fit:cover; display:block; opacity:.92}
+    .hero img.cover{
+      width:100%;height:100%;object-fit:cover; display:block; opacity:.92;
+      position:absolute; inset:0; z-index:1;
+    }
     .emptyCover{
+      z-index:1;
       position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:28px; color:var(--muted);
       background:
         radial-gradient(circle at 20% 18%, color-mix(in srgb,var(--accent) 24%,transparent), transparent 20%),
         radial-gradient(circle at 80% 28%, color-mix(in srgb,var(--accent2) 20%,transparent), transparent 18%),
         linear-gradient(155deg, color-mix(in srgb,var(--panel2) 78%,var(--accent)), var(--panel));
     }
-    .doodles{position:absolute; inset:0; pointer-events:none; opacity:.85}
+    .doodles{position:absolute; inset:0; pointer-events:none; opacity:.85; z-index:2}
     .doodles span{position:absolute; color:color-mix(in srgb,var(--accent) 78%,white); font-size:28px; opacity:.75}
     .doodles span:nth-child(1){left:12%;top:10%;transform:rotate(-12deg)}
     .doodles span:nth-child(2){right:15%;top:12%;transform:rotate(14deg)}
@@ -87,23 +96,21 @@
       position:absolute;
       left:18px;
       right:18px;
-      bottom:20px;
       width:auto;
       text-align:center;
       background:transparent;
+      z-index:30;
+      pointer-events:none;
+      display:block;
+      transform:translateY(-50%);
+      top:78%;
     }
+    .hero.hasCover .overlay{ top:82%; }
+    .hero.noCover .overlay{ top:80%; }
     .hero.hasCover .doodles{display:none}
     .hero.hasCover .overlay{background:transparent}
-    .hero.hasCover .label,
-    .hero.hasCover .days,
-    .hero.hasCover .since,
-    .hero.hasCover .quote,
-    .hero.hasCover .avatarNote{
-      color:#fff;
-      text-shadow:0 2px 8px rgba(0,0,0,.62), 0 0 18px rgba(0,0,0,.38);
-    }
     .hero.noCover .overlay{background:transparent}
-    .avatars{display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:10px}
+    .avatars{display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:8px}
     .avatar{
       width:44px;height:44px;border-radius:50%; border:2px solid rgba(255,255,255,.72);
       background:var(--panel); object-fit:cover; display:grid; place-items:center; overflow:hidden;
@@ -113,18 +120,18 @@
     .avatar + .avatar{margin-left:-2px}
     #charAvatar{z-index:2}
     #userAvatar{z-index:1}
-    .avatarNote{display:none}
-    .label{font-size:15px; font-weight:800; text-shadow:0 2px 14px rgba(0,0,0,.55); margin-top:5px; line-height:1.16}
+    .avatarNote{display:none!important}
+    .label{font-size:15px; font-weight:800; text-shadow:0 2px 14px rgba(0,0,0,.55); margin-top:0; line-height:1.16}
     .days{
       font-family:"Great Vibes","Snell Roundhand","Savoye LET","Zapfino","Apple Chancery","Segoe Script",cursive;
       font-size:32px; font-weight:400; letter-spacing:.01em;
-      line-height:1.16; margin-top:4px;
+      line-height:1.10; margin-top:1px;
     }
     .since{
       font-family:"Great Vibes","Snell Roundhand","Savoye LET","Zapfino","Apple Chancery","Segoe Script",cursive;
-      font-size:17px; font-weight:400; margin-top:1px; line-height:1.16;
+      font-size:17px; font-weight:400; margin-top:0; line-height:1.10;
     }
-    .quote{font-size:12px; color:rgba(255,255,255,.82); margin-top:5px; line-height:1.25}
+    .quote{font-size:12px; color:rgba(255,255,255,.82); margin-top:3px; line-height:1.25}
 
     .panel{margin-top:18px; border:1px solid var(--border); border-radius:24px; background:rgba(255,255,255,.055); padding:14px}
     .sectionHead{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
@@ -144,10 +151,13 @@
     .grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     label{display:block; font-size:12px; color:var(--muted); margin:10px 0 5px}
     input,select{
-      width:100%; border:1px solid var(--border); background:rgba(255,255,255,.07); color:var(--text);
+      width:100%; border:1px solid var(--border); background:var(--panel2); color:var(--text);
       border-radius:14px; padding:11px 12px; outline:none;
+      color-scheme: light;
     }
+    option{background:var(--panel); color:var(--text)}
     input[type="file"]{font-size:12px; padding:9px}
+    .fileRow{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center}
     .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:16px}
     .primary{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; border:0}
     .ghost{background:rgba(255,255,255,.06); color:var(--text); border:1px solid var(--border)}
@@ -195,6 +205,43 @@
     .hero:not(.hasCover) .milestoneBadge{background:rgba(255,255,255,.10); color:var(--text)}
 .footer{color:var(--muted); font-size:11px; text-align:center; margin-top:18px}
 
+
+    .hero.hasCover .overlay,
+    .hero.hasCover .overlay *{
+      opacity:1!important;
+      visibility:visible!important;
+    }
+    .hero.hasCover .label,
+    .hero.hasCover .days,
+    .hero.hasCover .since,
+    .hero.hasCover .quote{
+      color:#fff!important;
+      text-shadow:0 2px 8px rgba(0,0,0,.70), 0 0 18px rgba(0,0,0,.42)!important;
+    }
+
+    .overlay > *{
+      position:relative;
+      z-index:31;
+      opacity:1!important;
+      visibility:visible!important;
+    }
+    .hero.hasCover .overlay{
+      background:transparent!important;
+    }
+    .hero.hasCover .overlay > *{
+      display:block;
+    }
+    .hero.hasCover .avatars{
+      display:flex!important;
+    }
+
+    .hero.noCover .label,
+    .hero.noCover .days,
+    .hero.noCover .since,
+    .hero.noCover .quote{
+      color:var(--text)!important;
+      text-shadow:none!important;
+    }
     body.theme-midnight{--bg:#15151b;--panel:#222129;--panel2:#2c2a35;--text:#f7f2f8;--muted:#aaa2b4;--accent:#e9a7c6;--accent2:#8b7cf6}
     body.theme-moonmist{--bg:#eef1f8;--panel:#ffffff;--panel2:#dce2f1;--text:#273044;--muted:#6d7487;--accent:#8e9bd8;--accent2:#b9a5e8}
     body.theme-sakura{--bg:#fff4f7;--panel:#fffafd;--panel2:#ffe0e8;--text:#4b2e3b;--muted:#8b6877;--accent:#f2a1bd;--accent2:#d9a46f}
@@ -208,7 +255,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.9 date fix</div>
+        <div class="sub">角色戀愛檔案・v0.14 cover text fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -263,7 +310,7 @@
       <div class="events" id="events"></div>
     </section>
 
-    <div class="footer">v0.9：移除未來節點底框，修正日期含當日與周年日期。</div>
+    <div class="footer">v0.14：修正主圖後文字消失，並微調位置。</div>
   </main>
 
   <dialog id="rolePickerDialog">
@@ -285,7 +332,7 @@
       </div>
       <label>角色小頭像</label><input type="file" accept="image/*" id="charAvatarInput">
       <label>主控小頭像</label><input type="file" accept="image/*" id="userAvatarInput">
-      <label>中間紀念日圖</label><input type="file" accept="image/*" id="coverInput">
+      <label>中間紀念日圖</label><div class="fileRow"><input type="file" accept="image/*" id="coverInput"><button class="smallBtn danger" type="button" id="deleteCoverBtn">刪除圖片</button></div>
       <div class="hint">這版會自動把主圖置中裁切為 4:5，並壓縮到適合瀏覽器儲存的大小。小頭像會裁切成正方形。</div>
       <label>主題底色 / 邊框感</label>
       <select id="themeInput">
@@ -322,21 +369,27 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-9";
+    const STORE_KEY = "miya-anniversary-pwa-v0-14";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
 
+    function todayString(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
     function defaultRole(i){
+      const today = todayString();
       return {
-        id:i, userName:"Miya", charName: i===0 ? "凌辰" : `角色 ${String(i+1).padStart(2,"0")}`,
+        id:i, userName:"主控", charName:`角色 ${String(i+1).padStart(2,"0")}`,
         userAvatar:"", charAvatar:"", cover:"",
-        theme: i===0 ? "midnight" : "moonmist",
+        theme:"midnight",
         mainEvent:0,
         events:[
-          {title:"初次相遇", date:"2025-11-27", icon:"♡", quote:"故事從這一天開始。"},
-          {title:"在一起的日子", date:"2025-12-15", icon:"❤", quote:"從那天起，他走進了我的世界。"},
-          {title:"結婚紀念日", date:"2026-06-15", icon:"💍", quote:"把此後的每一天，都寫進同一本書裡。"}
+          {title:"初次相遇", date:today, icon:"♡", quote:"故事從這一天開始。"}
         ]
       }
     }
@@ -562,7 +615,15 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       charNameInput.value = r.charName || "";
       themeInput.value = r.theme || "midnight";
       userAvatarInput.value = ""; charAvatarInput.value = ""; coverInput.value = "";
+      deleteCoverBtn.disabled = !r.cover;
       roleDialog.showModal();
+    };
+    document.getElementById("deleteCoverBtn").onclick = ()=>{
+      const r = state.roles[current];
+      r.cover = "";
+      coverInput.value = "";
+      save(); render();
+      deleteCoverBtn.disabled = true;
     };
     document.getElementById("saveRoleBtn").onclick = async (ev)=>{
       ev.preventDefault();
