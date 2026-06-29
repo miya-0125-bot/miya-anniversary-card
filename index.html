@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#17151d" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.16</title>
+  <title>角色紀念日卡冊 v0.17</title>
   <style>
     :root{
       color-scheme: light;
@@ -17,11 +17,12 @@
       --cardShadow: 0 18px 48px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
-    html{background:var(--bg)}
+    html{background:var(--bg); color-scheme:light}
     body{
       margin:0; font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
       background: radial-gradient(circle at top, color-mix(in srgb, var(--accent) 18%, transparent), transparent 38%), var(--bg);
       color:var(--text); min-height:100svh;
+      color-scheme:light;
     }
     button,input,select{font:inherit}
     .app{
@@ -211,7 +212,7 @@
     }
     .hero:not(.hasCover) .milestone{color:var(--text); text-shadow:none}
     .hero:not(.hasCover) .milestoneBadge{background:rgba(255,255,255,.10); color:var(--text)}
-.footer{color:var(--muted); font-size:11px; text-align:center; margin-top:18px}
+.footer{display:none!important}
 
 
     .hero.hasCover .overlay,
@@ -250,12 +251,12 @@
       color:var(--text)!important;
       text-shadow:none!important;
     }
-    body.theme-midnight{--bg:#15151b;--panel:#222129;--panel2:#2c2a35;--text:#f7f2f8;--muted:#aaa2b4;--accent:#e9a7c6;--accent2:#8b7cf6}
-    body.theme-moonmist{--bg:#eef1f8;--panel:#ffffff;--panel2:#dce2f1;--text:#273044;--muted:#6d7487;--accent:#8e9bd8;--accent2:#b9a5e8}
-    body.theme-sakura{--bg:#fff4f7;--panel:#fffafd;--panel2:#ffe0e8;--text:#4b2e3b;--muted:#8b6877;--accent:#f2a1bd;--accent2:#d9a46f}
-    body.theme-blackgold{--bg:#15100f;--panel:#211a18;--panel2:#362721;--text:#fff4e8;--muted:#bfae9e;--accent:#b21f3a;--accent2:#c69b52}
-    body.theme-milktea{--bg:#f3eadf;--panel:#fffaf4;--panel2:#e6d4c2;--text:#46362d;--muted:#806f64;--accent:#c79b79;--accent2:#deb7a1}
-    body.theme-emerald{--bg:#eef7f2;--panel:#ffffff;--panel2:#d9eee3;--text:#1f3b32;--muted:#668176;--accent:#62b98c;--accent2:#88a7d8}
+    html.theme-midnight, body.theme-midnight{--bg:#15151b;--panel:#222129;--panel2:#2c2a35;--text:#f7f2f8;--muted:#aaa2b4;--accent:#e9a7c6;--accent2:#8b7cf6}
+    html.theme-moonmist, body.theme-moonmist{--bg:#eef1f8;--panel:#ffffff;--panel2:#dce2f1;--text:#273044;--muted:#6d7487;--accent:#8e9bd8;--accent2:#b9a5e8}
+    html.theme-sakura, body.theme-sakura{--bg:#fff4f7;--panel:#fffafd;--panel2:#ffe0e8;--text:#4b2e3b;--muted:#8b6877;--accent:#f2a1bd;--accent2:#d9a46f}
+    html.theme-blackgold, body.theme-blackgold{--bg:#15100f;--panel:#211a18;--panel2:#362721;--text:#fff4e8;--muted:#bfae9e;--accent:#b21f3a;--accent2:#c69b52}
+    html.theme-milktea, body.theme-milktea{--bg:#f3eadf;--panel:#fffaf4;--panel2:#e6d4c2;--text:#46362d;--muted:#806f64;--accent:#c79b79;--accent2:#deb7a1}
+    html.theme-emerald, body.theme-emerald{--bg:#eef7f2;--panel:#ffffff;--panel2:#d9eee3;--text:#1f3b32;--muted:#668176;--accent:#62b98c;--accent2:#88a7d8}
   </style>
 </head>
 <body class="theme-midnight">
@@ -263,7 +264,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.16 polish</div>
+        <div class="sub">角色戀愛檔案・v0.17 theme fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -314,7 +315,7 @@
       <div class="events" id="events"></div>
     </section>
 
-    <div class="footer">v0.16：整理主題名稱與空白主圖。</div>
+    
   </main>
 
   <dialog id="rolePickerDialog">
@@ -382,7 +383,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-16";
+    const STORE_KEY = "miya-anniversary-pwa-v0-17";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -464,7 +465,9 @@
 
     function render(){
       const role = state.roles[current];
-      document.body.className = "theme-" + (role.theme || "midnight");
+      const themeClass = "theme-" + (role.theme || "midnight");
+      document.body.className = themeClass;
+      document.documentElement.className = themeClass;
 
       const mini = document.getElementById("currentRoleMini");
       setImgOrText(mini, role.charAvatar, "♡");
@@ -622,6 +625,12 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
     document.getElementById("chooseRoleBtn").onclick = ()=>{ renderRoleList(); rolePickerDialog.showModal(); };
 
     const roleDialog = document.getElementById("roleDialog");
+    roleDialog.addEventListener("close", render);
+    themeInput.onchange = ()=>{
+      const themeClass = "theme-" + (themeInput.value || "midnight");
+      document.body.className = themeClass;
+      document.documentElement.className = themeClass;
+    };
     document.getElementById("editRoleBtn").onclick = ()=>{
       const r = state.roles[current];
       userNameInput.value = r.userName || "";
