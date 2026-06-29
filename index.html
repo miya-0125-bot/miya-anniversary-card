@@ -6,12 +6,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <meta name="theme-color" content="#17151d" />
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.18</title>
+  <title>角色紀念日卡冊 v0.19</title>
   <style>
     :root{
-      color-scheme: light;
+      color-scheme: light only;
       --bg:#15151b; --panel:#222129; --panel2:#2c2a35; --text:#f7f2f8; --muted:#a9a2b3;
       --accent:#e9a7c6; --accent2:#8b7cf6; --border:rgba(255,255,255,.12);
       --cardShadow: 0 18px 48px rgba(0,0,0,.35);
@@ -21,9 +22,10 @@
     body{
       margin:0; font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
       background-color:var(--bg);
+      background-image:radial-gradient(circle at top, rgba(255,255,255,0.10) 18%, transparent 38%);
       background-image:radial-gradient(circle at top, color-mix(in srgb, var(--accent) 18%, transparent), transparent 38%);
       color:var(--text); min-height:100svh;
-      color-scheme:light;
+      color-scheme:light only;
     }
     button,input,select{font:inherit}
     .app{
@@ -83,6 +85,7 @@
     .emptyCover{
       z-index:1;
       position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:28px; color:var(--muted);
+      background:var(--panel2);
       background:
         radial-gradient(circle at 20% 18%, color-mix(in srgb,var(--accent) 24%,transparent), transparent 20%),
         radial-gradient(circle at 80% 28%, color-mix(in srgb,var(--accent2) 20%,transparent), transparent 18%),
@@ -156,7 +159,7 @@
     input,select{
       width:100%; border:1px solid var(--border); background:var(--panel2); color:var(--text);
       border-radius:14px; padding:11px 12px; outline:none;
-      color-scheme: light;
+      color-scheme: light only;
     }
     option{background:var(--panel); color:var(--text)}
     input[type="file"]{font-size:12px; padding:9px}
@@ -252,6 +255,25 @@
       color:var(--text)!important;
       text-shadow:none!important;
     }
+
+    @supports not (color: color-mix(in srgb, white 50%, black)) {
+      body{
+        background-image:radial-gradient(circle at top, rgba(255,255,255,0.10) 18%, transparent 38%)!important;
+      }
+      .emptyCover{
+        background:var(--panel2)!important;
+      }
+      .panel{
+        background:var(--panel)!important;
+      }
+      .event{
+        background:var(--panel2)!important;
+      }
+      .roleChip,.pill{
+        background:var(--panel)!important;
+      }
+    }
+
     html.theme-midnight, body.theme-midnight{--bg:#15151b;--panel:#222129;--panel2:#2c2a35;--text:#f7f2f8;--muted:#aaa2b4;--accent:#e9a7c6;--accent2:#8b7cf6}
     html.theme-moonmist, body.theme-moonmist{--bg:#eef1f8;--panel:#ffffff;--panel2:#dce2f1;--text:#273044;--muted:#6d7487;--accent:#8e9bd8;--accent2:#b9a5e8}
     html.theme-sakura, body.theme-sakura{--bg:#fff4f7;--panel:#fffafd;--panel2:#ffe0e8;--text:#4b2e3b;--muted:#8b6877;--accent:#f2a1bd;--accent2:#d9a46f}
@@ -265,7 +287,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.18 theme hard fix</div>
+        <div class="sub">角色戀愛檔案・v0.19 safari fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -384,7 +406,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-18";
+    const STORE_KEY = "miya-anniversary-pwa-v0-19";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;

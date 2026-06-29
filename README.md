@@ -1,9 +1,14 @@
-# 角色紀念日卡冊 v0.18
+# 角色紀念日卡冊 v0.19
 
-本版修正：
-- 針對 iPhone Safari / PWA 淺色主題仍顯示深色的問題，改用 JavaScript 直接把主題色寫入 html 與 body 的 inline style。
-- 也會同步更新 meta theme-color。
-- 主要卡片、日期卡、角色按鈕背景改成更依賴主題變數，避免淺色主題看起來仍像深色。
+本版針對 iPhone Safari / PWA 淺色主題仍被壓成深色做防禦修正：
+
+- 在 index.html head 加入：
+  <meta name="color-scheme" content="light only">
+- 將 meta theme-color 預設改成 #ffffff。
+- manifest.webmanifest 的 background_color 與 theme_color 改成 #ffffff。
+- body 與 .emptyCover 加入不依賴 color-mix 的 fallback 背景。
+- 新增 @supports not color-mix 的 fallback，給舊版 iOS / Safari 使用。
+- 保留 v0.18 的 applyTheme() 強制寫入 html/body inline style。
 
 更新 GitHub 時覆蓋：
 index.html
@@ -12,7 +17,8 @@ sw.js
 icon.svg
 README.md
 
-若手機仍顯示舊色：
-1. 先確認頁面左上角版本是 v0.18。
-2. 若還是 v0.17 或更早，代表 PWA 快取還沒更新。
-3. 刪掉桌面 PWA 圖示，Safari 開網址重新整理幾次，再重新加入主畫面。
+手機測試建議：
+1. 上傳後確認左上角是 v0.19。
+2. Safari 開網址加 ?v=019 強制刷新。
+3. 若 PWA 仍吃舊版，刪掉桌面圖示後重新加入主畫面。
+4. 必要時清除 Safari 該網站資料。
