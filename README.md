@@ -1,30 +1,29 @@
-# 角色紀念日卡冊 v0.21
+# 角色紀念日卡冊 v0.22 light-lock 測試版
 
-這是手機 Safari / PWA 深色快取問題的測試版。
+這是一個診斷用版本，不是最終版。
 
-本版改動：
-- index.html 的 meta theme-color 固定為 #fff4f7。
-- manifest.webmanifest 的 background_color / theme_color 固定為 #fff4f7。
-- 暫停註冊 Service Worker，並在頁面載入時嘗試 unregister 舊 Service Worker。
-- sw.js 改成不快取，並清除舊 cache。
-- 另外附上 test.html，方便用 /test.html 繞過舊 index.html 快取測試。
+目的：
+確認 iPhone Safari / PWA 到底能不能顯示淺色。
 
-測試順序：
-1. 上傳並覆蓋 GitHub 檔案：
-   index.html
-   test.html
-   manifest.webmanifest
-   sw.js
-   icon.svg
-   README.md
+本版做法：
+- 不再依賴 color-mix。
+- 不再依賴主題 class 的正常切換。
+- applyTheme() 會無條件鎖定櫻花粉白。
+- HTML / body / 主要面板都用 !important 強制淺色。
+- 暫停 Service Worker，並嘗試 unregister 舊 Service Worker。
+- 附 test.html 以繞過 index.html 快取。
 
-2. 用手機 Safari 開：
-   你的網址/test.html?v=021
+上傳 GitHub 時覆蓋：
+index.html
+test.html
+manifest.webmanifest
+sw.js
+icon.svg
+README.md
 
-3. 如果 test.html 是淺色，代表之前是快取問題。
+測試網址：
+你的 GitHub Pages 網址/test.html?v=022
 
-4. 如果 test.html 仍然深色，進「編輯」確認目前角色主題是否仍存成深夜暗幕。
-   舊資料不會被新版預設覆蓋，需要手動改主題或清除網站資料。
-
-注意：
-這版是測試版，暫時關閉 PWA 離線快取。等主題問題確認解決後，再決定要不要恢復 Service Worker。
+判讀：
+- 如果 v0.22 test.html 變淺色：代表前面是主題切換或舊資料問題，我們再把正常主題系統修回來。
+- 如果 v0.22 test.html 仍是深色：代表手機讀到的不是這份檔案，或 Safari / GitHub Pages / PWA 快取還在攔截，需要清除網站資料或換一個全新檔名 / repo 測。
