@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#17151d" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.14</title>
+  <title>角色紀念日卡冊 v0.16</title>
   <style>
     :root{
       color-scheme: light;
@@ -86,6 +86,7 @@
         radial-gradient(circle at 80% 28%, color-mix(in srgb,var(--accent2) 20%,transparent), transparent 18%),
         linear-gradient(155deg, color-mix(in srgb,var(--panel2) 78%,var(--accent)), var(--panel));
     }
+    .emptyHeart{font-size:42px; color:color-mix(in srgb,var(--accent) 55%,var(--muted)); opacity:.9}
     .doodles{position:absolute; inset:0; pointer-events:none; opacity:.85; z-index:2}
     .doodles span{position:absolute; color:color-mix(in srgb,var(--accent) 78%,white); font-size:28px; opacity:.75}
     .doodles span:nth-child(1){left:12%;top:10%;transform:rotate(-12deg)}
@@ -165,6 +166,13 @@
     .smallBtn{padding:8px 10px; border-radius:14px; cursor:pointer}
     .hidden{display:none!important}
     .hint{font-size:12px; color:var(--muted); line-height:1.55; margin-top:10px}
+    .backupBox{
+      margin-top:14px; padding:12px; border:1px solid var(--border);
+      border-radius:18px; background:rgba(255,255,255,.045);
+    }
+    .backupTitle{font-size:13px; font-weight:800; margin-bottom:8px}
+    .backupActions{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .backupNote{font-size:11px; color:var(--muted); line-height:1.45; margin-top:8px}
     .roleList{display:grid; gap:10px; max-height:65svh; overflow:auto; padding-right:2px}
     .roleItem{
       display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border);
@@ -255,7 +263,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.14 cover text fix</div>
+        <div class="sub">角色戀愛檔案・v0.16 polish</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -268,11 +276,7 @@
 
     <section class="hero" id="hero">
       <div class="emptyCover" id="emptyCover">
-        <div>
-          <div style="font-size:34px;margin-bottom:8px;">♡</div>
-          <b>上傳一張紀念日圖</b>
-          <div class="hint">非 4:5 圖片會自動置中裁切成 4:5，避免塞進 localStorage 時太大而失敗。</div>
-        </div>
+        <div aria-hidden="true" class="emptyHeart">♡</div>
       </div>
       <img class="cover hidden" id="coverImg" alt="紀念日圖">
       <div class="doodles"><span>♡</span><span>☾</span><span>✦</span><span>♡</span></div>
@@ -310,7 +314,7 @@
       <div class="events" id="events"></div>
     </section>
 
-    <div class="footer">v0.14：修正主圖後文字消失，並微調位置。</div>
+    <div class="footer">v0.16：整理主題名稱與空白主圖。</div>
   </main>
 
   <dialog id="rolePickerDialog">
@@ -336,13 +340,22 @@
       <div class="hint">這版會自動把主圖置中裁切為 4:5，並壓縮到適合瀏覽器儲存的大小。小頭像會裁切成正方形。</div>
       <label>主題底色 / 邊框感</label>
       <select id="themeInput">
-        <option value="midnight">深夜黑・卿卿我我感</option>
-        <option value="moonmist">月霧藍紫・Miya 冷調</option>
-        <option value="sakura">櫻花粉白・甜蜜柔光</option>
-        <option value="blackgold">黑金酒紅・危險戀人</option>
-        <option value="milktea">奶茶韓系・柔霧乾淨</option>
-        <option value="emerald">薄荷綠・清新可愛</option>
+        <option value="midnight">深夜暗幕・戀人微光</option>
+        <option value="moonmist">月霧藍紫・清冷微光</option>
+        <option value="sakura">櫻花粉白・甜夢柔光</option>
+        <option value="blackgold">黑金酒紅・禁忌戀人</option>
+        <option value="milktea">奶茶柔霧・清透乾淨</option>
+        <option value="emerald">薄荷新綠・清新可愛</option>
       </select>
+      <div class="backupBox">
+        <div class="backupTitle">資料備份</div>
+        <div class="backupActions">
+          <button class="smallBtn ghost" type="button" id="exportBackupBtn">匯出備份</button>
+          <button class="smallBtn ghost" type="button" id="importBackupBtn">匯入備份</button>
+        </div>
+        <input class="hidden" type="file" accept="application/json,.json" id="importBackupInput">
+        <div class="backupNote">備份會包含角色名稱、日期、主題與已存入工具的圖片資料。匯入會覆蓋目前這台裝置上的資料。</div>
+      </div>
       <div class="actions">
         <button class="smallBtn ghost" value="cancel">取消</button>
         <button class="smallBtn primary" id="saveRoleBtn" value="default">儲存</button>
@@ -369,7 +382,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-14";
+    const STORE_KEY = "miya-anniversary-pwa-v0-16";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -676,6 +689,70 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       save(); eventDialog.close(); render();
     };
 
+
+
+    function exportBackup(){
+      const payload = {
+        app: "角色紀念日卡冊",
+        schemaVersion: 1,
+        exportedAt: new Date().toISOString(),
+        data: state
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().slice(0,10).replaceAll("-","");
+      a.href = url;
+      a.download = `角色紀念日卡冊_備份_${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function normalizeImportedBackup(json){
+      const data = json?.data || json;
+      if(!data || !Array.isArray(data.roles)) throw new Error("備份格式不正確");
+      const roles = data.roles.slice(0, MAX).map((role, i)=>({
+        ...defaultRole(i),
+        ...role,
+        id: i,
+        events: Array.isArray(role.events) && role.events.length ? role.events : defaultRole(i).events
+      }));
+      while(roles.length < MAX) roles.push(defaultRole(roles.length));
+      return {
+        current: Math.max(0, Math.min(Number(data.current || 0), MAX - 1)),
+        roles
+      };
+    }
+
+    function importBackupFile(file){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const imported = normalizeImportedBackup(JSON.parse(reader.result));
+          const ok = confirm("匯入備份會覆蓋目前這台裝置上的角色資料。確定要匯入嗎？");
+          if(!ok) return;
+          state = imported;
+          current = state.current || 0;
+          save();
+          render();
+          roleDialog.close();
+          alert("備份匯入完成。");
+        }catch(err){
+          alert("匯入失敗：這個 JSON 檔看起來不是有效的角色紀念日卡冊備份。");
+        }finally{
+          importBackupInput.value = "";
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+
+    document.getElementById("exportBackupBtn").onclick = exportBackup;
+    document.getElementById("importBackupBtn").onclick = ()=> importBackupInput.click();
+    document.getElementById("importBackupInput").onchange = (ev)=> importBackupFile(ev.target.files[0]);
 
     if("serviceWorker" in navigator){
       window.addEventListener("load",()=> navigator.serviceWorker.register("./sw.js").catch(()=>{}));

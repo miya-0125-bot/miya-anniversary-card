@@ -1,4 +1,4 @@
-const CACHE = "miya-anniversary-v0-14";
+const CACHE = "anniversary-card-v0-16";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   self.skipWaiting();
