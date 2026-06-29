@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.26 test</title>
+  <title>角色紀念日卡冊 v0.27 test</title>
   <style>
     :root{
       color-scheme: light only;
@@ -420,6 +420,18 @@
       opacity:.55!important;
     }
 
+  
+    body.theme-sakura .avatar,
+    body.theme-moonmist .avatar,
+    body.theme-milktea .avatar,
+    body.theme-emerald .avatar,
+    body.theme-sakura .roleChip .mini,
+    body.theme-moonmist .roleChip .mini,
+    body.theme-milktea .roleChip .mini,
+    body.theme-emerald .roleChip .mini{
+      font-weight:800!important;
+    }
+
   </style>
 </head>
 <body class="theme-sakura">
@@ -427,7 +439,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.26 contrast</div>
+        <div class="sub">角色戀愛檔案・v0.27 avatar polish</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -546,7 +558,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-26";
+    const STORE_KEY = "miya-anniversary-pwa-v0-27";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
