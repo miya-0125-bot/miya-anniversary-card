@@ -1,15 +1,26 @@
-# Visual Color Test v0.24
+# 角色紀念日卡冊 v0.25 image-theme
 
-這是最後一層顏色診斷。
-請上傳：
-- visual-color-test-024.html
-- pink-background-024.png
-- README.md
+本版是針對 iPhone Safari 將 CSS 淺色背景壓成深色的 workaround。
 
-手機網址：
-/visual-color-test-024.html?v=024
+根據 v0.24 測試：
+- CSS 色塊會變深
+- PNG 圖片維持正常粉色
 
-判讀：
-- CSS 色塊變深，但 PNG 圖片是粉色：Safari/CSS 顏色處理問題。
-- CSS 色塊和 PNG 圖片都變深：手機/瀏覽器/系統顯示層級在反轉或套暗色濾鏡，不是 App 程式碼。
-- 全部粉色：之前是舊檔/路徑/快取問題。
+所以 v0.25 改成：
+- 背景、主卡、面板、日期卡、按鈕等底色改用小型 PNG image background。
+- 保留文字與功能邏輯。
+- 預設主題為櫻花粉白。
+- 暫停 Service Worker 快取，避免測試時卡舊版。
+
+更新 GitHub 時覆蓋：
+index.html
+test.html
+manifest.webmanifest
+sw.js
+icon.svg
+README.md
+
+手機測試：
+/test.html?v=025
+
+如果 v0.25 可正常顯示淺色，之後可以把這版整理成正式穩定版。
