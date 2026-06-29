@@ -1,16 +1,13 @@
-# 角色紀念日卡冊 v0.25 image-theme
+# 角色紀念日卡冊 v0.26 contrast
 
-本版是針對 iPhone Safari 將 CSS 淺色背景壓成深色的 workaround。
+本版基於 v0.25 image-theme，針對手機畫面過淡做可讀性修正：
 
-根據 v0.24 測試：
-- CSS 色塊會變深
-- PNG 圖片維持正常粉色
-
-所以 v0.25 改成：
-- 背景、主卡、面板、日期卡、按鈕等底色改用小型 PNG image background。
-- 保留文字與功能邏輯。
-- 預設主題為櫻花粉白。
-- 暫停 Service Worker 快取，避免測試時卡舊版。
+- 保留 PNG 圖片底色 workaround。
+- 淺色主題文字顏色加深。
+- 日期、標題、角色名、按鈕提高對比。
+- 頭像底色加深，避免太淡。
+- 裝飾圖案透明度降低，讓主文字更清楚。
+- 暫停 Service Worker 快取，避免手機吃舊檔。
 
 更新 GitHub 時覆蓋：
 index.html
@@ -21,6 +18,4 @@ icon.svg
 README.md
 
 手機測試：
-/test.html?v=025
-
-如果 v0.25 可正常顯示淺色，之後可以把這版整理成正式穩定版。
+/test.html?v=026
