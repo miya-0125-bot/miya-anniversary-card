@@ -1,29 +1,21 @@
-# 角色紀念日卡冊 v0.22 light-lock 測試版
+# Color Test v0.23
 
-這是一個診斷用版本，不是最終版。
+這包不是正式 app，是用來判斷手機 Safari 是否能顯示淺色。
 
-目的：
-確認 iPhone Safari / PWA 到底能不能顯示淺色。
-
-本版做法：
-- 不再依賴 color-mix。
-- 不再依賴主題 class 的正常切換。
-- applyTheme() 會無條件鎖定櫻花粉白。
-- HTML / body / 主要面板都用 !important 強制淺色。
-- 暫停 Service Worker，並嘗試 unregister 舊 Service Worker。
-- 附 test.html 以繞過 index.html 快取。
-
-上傳 GitHub 時覆蓋：
-index.html
-test.html
-manifest.webmanifest
-sw.js
-icon.svg
-README.md
+請上傳這 4 個檔案到 GitHub repo root：
+- index.html
+- sakura-absolute-test-023.html
+- pink-card-test-023.html
+- README.md
 
 測試網址：
-你的 GitHub Pages 網址/test.html?v=022
+- /sakura-absolute-test-023.html?v=023
+- /pink-card-test-023.html?v=023
 
-判讀：
-- 如果 v0.22 test.html 變淺色：代表前面是主題切換或舊資料問題，我們再把正常主題系統修回來。
-- 如果 v0.22 test.html 仍是深色：代表手機讀到的不是這份檔案，或 Safari / GitHub Pages / PWA 快取還在攔截，需要清除網站資料或換一個全新檔名 / repo 測。
+判斷：
+1. sakura-absolute-test-023.html 如果還是深色：
+   問題幾乎不在 app，而在手機顯示設定、Safari 行為、GitHub Pages 快取或網址來源。
+2. sakura-absolute-test-023.html 是淺色，但 pink-card-test-023.html 是深色：
+   問題在 app 內某段 CSS/JS 或 localStorage 角色資料。
+3. 兩個都是淺色：
+   代表之前就是 index/test 路徑或 service worker 快取問題。
