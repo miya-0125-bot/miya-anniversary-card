@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#fff4f7">
+  <title>VISUAL COLOR TEST v0.24</title>
+  <style>
+    html, body {
+      margin:0;
+      min-height:100vh;
+      color-scheme: light only !important;
+      background:#fff4f7 !important;
+      color:#4b2e3b !important;
+      font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;
+    }
+    .wrap{padding:24px;}
+    .card{background:#fffafd;border:2px solid #f2a1bd;border-radius:24px;padding:18px;margin:16px 0;}
+    .swatches{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+    .swatch{height:120px;border-radius:18px;display:grid;place-items:center;font-weight:800;}
+    .s1{background:#fff4f7;color:#4b2e3b;border:1px solid #f2a1bd;}
+    .s2{background:#ffe0e8;color:#4b2e3b;}
+    .s3{background:#f2a1bd;color:white;}
+    .s4{background:#62b98c;color:white;}
+    .imgbox{
+      margin-top:18px;border-radius:24px;overflow:hidden;border:2px solid #f2a1bd;
+      background:white;
+    }
+    .imgbox img{display:block;width:100%;height:auto;}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>VISUAL COLOR TEST v0.24</h1>
+    <div class="card">
+      <p>這頁有兩種測試：</p>
+      <p>上半部是 CSS 顏色；下半部是一張真正的粉色 PNG 圖片。</p>
+      <p>如果 CSS 和 PNG 都變深色，代表不是 App 程式碼，是手機/瀏覽器層級在改色。</p>
+    </div>
+    <div class="swatches">
+      <div class="swatch s1">CSS #fff4f7</div>
+      <div class="swatch s2">CSS #ffe0e8</div>
+      <div class="swatch s3">CSS #f2a1bd</div>
+      <div class="swatch s4">CSS #62b98c</div>
+    </div>
+    <div class="imgbox">
+      <img src="./pink-background-024.png?v=024" alt="pink png test">
+    </div>
+  </main>
+</body>
+</html>

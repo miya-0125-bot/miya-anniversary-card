@@ -1,21 +1,15 @@
-# Color Test v0.23
+# Visual Color Test v0.24
 
-這包不是正式 app，是用來判斷手機 Safari 是否能顯示淺色。
-
-請上傳這 4 個檔案到 GitHub repo root：
-- index.html
-- sakura-absolute-test-023.html
-- pink-card-test-023.html
+這是最後一層顏色診斷。
+請上傳：
+- visual-color-test-024.html
+- pink-background-024.png
 - README.md
 
-測試網址：
-- /sakura-absolute-test-023.html?v=023
-- /pink-card-test-023.html?v=023
+手機網址：
+/visual-color-test-024.html?v=024
 
-判斷：
-1. sakura-absolute-test-023.html 如果還是深色：
-   問題幾乎不在 app，而在手機顯示設定、Safari 行為、GitHub Pages 快取或網址來源。
-2. sakura-absolute-test-023.html 是淺色，但 pink-card-test-023.html 是深色：
-   問題在 app 內某段 CSS/JS 或 localStorage 角色資料。
-3. 兩個都是淺色：
-   代表之前就是 index/test 路徑或 service worker 快取問題。
+判讀：
+- CSS 色塊變深，但 PNG 圖片是粉色：Safari/CSS 顏色處理問題。
+- CSS 色塊和 PNG 圖片都變深：手機/瀏覽器/系統顯示層級在反轉或套暗色濾鏡，不是 App 程式碼。
+- 全部粉色：之前是舊檔/路徑/快取問題。
