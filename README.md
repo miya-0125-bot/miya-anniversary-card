@@ -1,14 +1,16 @@
-# 角色紀念日卡冊 v0.19
+# 角色紀念日卡冊 v0.20
 
-本版針對 iPhone Safari / PWA 淺色主題仍被壓成深色做防禦修正：
+本版修正：
+- 將 HTML 初始 body class 從 theme-midnight 改成 theme-sakura。
+- 將 CSS :root 預設色也改成櫻花粉白系。
+- 新角色 defaultRole 的預設主題改成 sakura。
+- applyTheme 的 fallback 從 midnight 改成 sakura。
+- manifest.webmanifest 的 background_color / theme_color 改成 #fff4f7。
 
-- 在 index.html head 加入：
-  <meta name="color-scheme" content="light only">
-- 將 meta theme-color 預設改成 #ffffff。
-- manifest.webmanifest 的 background_color 與 theme_color 改成 #ffffff。
-- body 與 .emptyCover 加入不依賴 color-mix 的 fallback 背景。
-- 新增 @supports not color-mix 的 fallback，給舊版 iOS / Safari 使用。
-- 保留 v0.18 的 applyTheme() 強制寫入 html/body inline style。
+重要提醒：
+- 如果手機上已經有舊資料，舊角色本身可能已經存成 midnight 主題。
+- 這種情況要進「編輯」手動把角色主題改成淺色並儲存，或清除網站資料重新開始。
+- 如果只是要測新預設，建議用 ?v=020 開網址，或清除該網站資料後重開。
 
 更新 GitHub 時覆蓋：
 index.html
@@ -16,9 +18,3 @@ manifest.webmanifest
 sw.js
 icon.svg
 README.md
-
-手機測試建議：
-1. 上傳後確認左上角是 v0.19。
-2. Safari 開網址加 ?v=019 強制刷新。
-3. 若 PWA 仍吃舊版，刪掉桌面圖示後重新加入主畫面。
-4. 必要時清除 Safari 該網站資料。

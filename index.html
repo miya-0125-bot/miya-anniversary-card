@@ -9,11 +9,11 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#ffffff" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.19</title>
+  <title>角色紀念日卡冊 v0.20</title>
   <style>
     :root{
       color-scheme: light only;
-      --bg:#15151b; --panel:#222129; --panel2:#2c2a35; --text:#f7f2f8; --muted:#a9a2b3;
+      --bg:#fff4f7; --panel:#fffafd; --panel2:#ffe0e8; --text:#4b2e3b; --muted:#8b6877;
       --accent:#e9a7c6; --accent2:#8b7cf6; --border:rgba(255,255,255,.12);
       --cardShadow: 0 18px 48px rgba(0,0,0,.35);
     }
@@ -282,12 +282,12 @@
     html.theme-emerald, body.theme-emerald{--bg:#eef7f2;--panel:#ffffff;--panel2:#d9eee3;--text:#1f3b32;--muted:#668176;--accent:#62b98c;--accent2:#88a7d8}
   </style>
 </head>
-<body class="theme-midnight">
+<body class="theme-sakura">
   <main class="app">
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.19 safari fix</div>
+        <div class="sub">角色戀愛檔案・v0.20 default theme</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -406,7 +406,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-19";
+    const STORE_KEY = "miya-anniversary-pwa-v0-20";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -420,7 +420,7 @@
       emerald: {bg:"#eef7f2", panel:"#ffffff", panel2:"#d9eee3", text:"#1f3b32", muted:"#668176", accent:"#62b98c", accent2:"#88a7d8", border:"rgba(31,59,50,.12)"}
     };
     function applyTheme(themeName){
-      const key = THEME_STYLES[themeName] ? themeName : "midnight";
+      const key = THEME_STYLES[themeName] ? themeName : "sakura";
       const t = THEME_STYLES[key];
       document.body.className = "theme-" + key;
       document.documentElement.className = "theme-" + key;
@@ -455,7 +455,7 @@
       return {
         id:i, userName:"主控", charName:`角色 ${String(i+1).padStart(2,"0")}`,
         userAvatar:"", charAvatar:"", cover:"",
-        theme:"midnight",
+        theme:"sakura",
         mainEvent:0,
         events:[
           {title:"初次相遇", date:today, icon:"♡", quote:"故事從這一天開始。"}
@@ -520,7 +520,7 @@
 
     function render(){
       const role = state.roles[current];
-      applyTheme(role.theme || "midnight");
+      applyTheme(role.theme || "sakura");
 
       const mini = document.getElementById("currentRoleMini");
       setImgOrText(mini, role.charAvatar, "♡");
@@ -679,12 +679,12 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
 
     const roleDialog = document.getElementById("roleDialog");
     roleDialog.addEventListener("close", render);
-    themeInput.onchange = ()=> applyTheme(themeInput.value || "midnight");
+    themeInput.onchange = ()=> applyTheme(themeInput.value || "sakura");
     document.getElementById("editRoleBtn").onclick = ()=>{
       const r = state.roles[current];
       userNameInput.value = r.userName || "";
       charNameInput.value = r.charName || "";
-      themeInput.value = r.theme || "midnight";
+      themeInput.value = r.theme || "sakura";
       userAvatarInput.value = ""; charAvatarInput.value = ""; coverInput.value = "";
       deleteCoverBtn.disabled = !r.cover;
       roleDialog.showModal();

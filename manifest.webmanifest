@@ -3,8 +3,8 @@
   "short_name": "紀念日卡冊",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#fff4f7",
+  "theme_color": "#fff4f7",
   "icons": [
     {
       "src": "icon.svg",
