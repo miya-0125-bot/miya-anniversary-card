@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.27 test</title>
+  <title>角色紀念日卡冊 v0.28 test</title>
   <style>
     :root{
       color-scheme: light only;
@@ -432,6 +432,55 @@
       font-weight:800!important;
     }
 
+  
+    /* v0.28 final override: make avatar and top role heart soft/light on light themes */
+    body.theme-sakura .overlay .avatar,
+    body.theme-moonmist .overlay .avatar,
+    body.theme-milktea .overlay .avatar,
+    body.theme-emerald .overlay .avatar{
+      background-image:var(--panel-img)!important;
+      background-color:#fffafd!important;
+      color:#5a3f4b!important;
+      border:2px solid rgba(90,63,75,.18)!important;
+      box-shadow:0 8px 24px rgba(90,63,75,.10)!important;
+      text-shadow:none!important;
+    }
+    body.theme-sakura .roleChip .mini,
+    body.theme-moonmist .roleChip .mini,
+    body.theme-milktea .roleChip .mini,
+    body.theme-emerald .roleChip .mini{
+      background-image:var(--panel-img)!important;
+      background-color:#fffafd!important;
+      color:#b00055!important;
+      border:1px solid rgba(90,63,75,.16)!important;
+      box-shadow:0 6px 18px rgba(90,63,75,.08)!important;
+      text-shadow:none!important;
+    }
+    body.theme-sakura .roleChip,
+    body.theme-moonmist .roleChip,
+    body.theme-milktea .roleChip,
+    body.theme-emerald .roleChip,
+    body.theme-sakura .pill,
+    body.theme-moonmist .pill,
+    body.theme-milktea .pill,
+    body.theme-emerald .pill{
+      background-image:var(--panel-img)!important;
+      background-color:#fffafd!important;
+      color:var(--text)!important;
+      border-color:rgba(90,63,75,.16)!important;
+      box-shadow:0 6px 18px rgba(90,63,75,.06)!important;
+    }
+    body.theme-sakura .overlay .avatar img,
+    body.theme-moonmist .overlay .avatar img,
+    body.theme-milktea .overlay .avatar img,
+    body.theme-emerald .overlay .avatar img,
+    body.theme-sakura .roleChip .mini img,
+    body.theme-moonmist .roleChip .mini img,
+    body.theme-milktea .roleChip .mini img,
+    body.theme-emerald .roleChip .mini img{
+      background:transparent!important;
+    }
+
   </style>
 </head>
 <body class="theme-sakura">
@@ -439,7 +488,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.27 avatar polish</div>
+        <div class="sub">角色戀愛檔案・v0.28 soft circles</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -558,7 +607,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-27";
+    const STORE_KEY = "miya-anniversary-pwa-v0-28";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
