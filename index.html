@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.42</title>
+  <title>角色紀念日卡冊 v0.44</title>
   <style>
     :root{
       color-scheme: light only;
@@ -484,7 +484,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.42</div>
+        <div class="sub">角色戀愛檔案・v0.44</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -552,8 +552,8 @@
     <form method="dialog" class="modal" id="roleForm">
       <h3>編輯角色卡</h3>
       <div class="grid">
-        <div><label>角色名稱</label><input id="charNameInput" placeholder="凌辰"></div>
-        <div><label>主控名稱</label><input id="userNameInput" placeholder="Miya / 恩雅"></div>
+        <div><label>角色名稱</label><input id="charNameInput" placeholder="角色 01"></div>
+        <div><label>主控名稱</label><input id="userNameInput" placeholder="主控"></div>
       </div>
       <label>角色小頭像</label><div class="fileRow imageRow"><input class="hiddenFile" type="file" accept="image/*" id="charAvatarInput"><label class="smallBtn fileBtn" for="charAvatarInput">選擇圖片</label><button class="smallBtn danger" type="button" id="deleteCharAvatarBtn">刪除圖片</button></div>
       <label>主控小頭像</label><div class="fileRow imageRow"><input class="hiddenFile" type="file" accept="image/*" id="userAvatarInput"><label class="smallBtn fileBtn" for="userAvatarInput">選擇圖片</label><button class="smallBtn danger" type="button" id="deleteUserAvatarBtn">刪除圖片</button></div>
@@ -625,7 +625,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-42";
+    const STORE_KEY = "miya-anniversary-pwa-v0-44";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -737,20 +737,36 @@
       setTimeout(()=>{ heroScroll.scrollTop = 0; }, 60);
     }
 
-
-    // v0.42 privacy cleanup: replace old personal fallback defaults with generic public-safe names
+    // v0.44 public-safe default cleanup
     function sanitizePublicDefaults(){
       try{
         state.roles.forEach((r, i)=>{
           if(!r) return;
-          if(r.userName === "Miya" || r.userName === "Miya / 恩雅") r.userName = "主控";
-          if(r.charName === "凌辰" || r.charName === "恩雅") r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
+          if(!(r.userName || "").trim()) r.userName = "主控";
+          if(!(r.charName || "").trim()) r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
+        });
+        save();
+      }catch(e){}
+    }
+
+    function forcePublicSafeUi(){
+      try{
+        document.querySelectorAll(".sub").forEach(el=>{
+          if(el.textContent && el.textContent.includes("角色戀愛檔案")){
+            el.textContent = "角色戀愛檔案・v0.44";
+          }
+        });
+        state.roles.forEach((r, i)=>{
+          if(!r) return;
+          if(!(r.userName || "").trim()) r.userName = "主控";
+          if(!(r.charName || "").trim()) r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
         });
         save();
       }catch(e){}
     }
 
     function render(){
+      forcePublicSafeUi();
       const role = state.roles[current];
       applyTheme(role.theme || "sakura");
 
@@ -1501,6 +1517,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
     window.addEventListener("load", resetHeroScroll);
     window.addEventListener("pageshow", resetHeroScroll);
     sanitizePublicDefaults();
+    forcePublicSafeUi();
     render();
   </script>
 </body>
