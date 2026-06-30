@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.35</title>
+  <title>角色紀念日卡冊 v0.36</title>
   <style>
     :root{
       color-scheme: light only;
@@ -372,6 +372,45 @@
     }
     .cropStaticNote,.hint{display:none!important}
 
+  
+    /* v0.36 final polish */
+    .heroCard{
+      border-color:transparent!important;
+      box-shadow:none!important;
+    }
+    .coverImg{
+      outline:none!important;
+      border:0!important;
+      box-shadow:none!important;
+    }
+
+    body.theme-midnight .danger{
+      background:rgba(190,176,255,.12)!important;
+      color:#d8ccff!important;
+      border:1px solid rgba(216,204,255,.28)!important;
+    }
+    body.theme-midnight .cropPickedStatus{
+      background:rgba(190,176,255,.14)!important;
+      color:#e1d8ff!important;
+      border:1px solid rgba(216,204,255,.26)!important;
+    }
+    body.theme-midnight .primary{
+      background:linear-gradient(135deg,#8f7cff,#c8a8ff)!important;
+      color:#17151f!important;
+      border:0!important;
+    }
+
+    body.theme-blackgold .danger{
+      background:rgba(189,68,86,.18)!important;
+      color:#ff8fa3!important;
+      border:1px solid rgba(255,143,163,.36)!important;
+    }
+    body.theme-blackgold .cropPickedStatus{
+      background:rgba(211,168,110,.14)!important;
+      color:#e7c489!important;
+      border:1px solid rgba(231,196,137,.34)!important;
+    }
+
   </style>
 </head>
 <body class="theme-sakura">
@@ -379,7 +418,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.35 final ui</div>
+        <div class="sub">角色戀愛檔案・v0.36 final polish</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -520,7 +559,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-35";
+    const STORE_KEY = "miya-anniversary-pwa-v0-36";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
