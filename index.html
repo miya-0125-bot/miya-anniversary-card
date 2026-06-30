@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.29</title>
+  <title>角色紀念日卡冊 v0.30</title>
   <style>
     :root{
       color-scheme: light only;
@@ -304,7 +304,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.29 crop</div>
+        <div class="sub">角色戀愛檔案・v0.30 crop fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -446,7 +446,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-29";
+    const STORE_KEY = "miya-anniversary-pwa-v0-30";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -982,6 +982,237 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
     }
 
     bindCropperOnce();
+
+
+    // v0.30 robust cropper override
+    (function(){
+      function getEl(id){ return document.getElementById(id); }
+
+      let cropStateV30 = null;
+
+      function ensureCropDialogV30(){
+        if(getEl("cropDialog")) return;
+        const dlg = document.createElement("dialog");
+        dlg.className = "cropDialog";
+        dlg.id = "cropDialog";
+        dlg.innerHTML = `
+          <div class="cropHead">
+            <div class="cropTitle" id="cropTitle">裁切圖片</div>
+            <button class="smallBtn ghost" type="button" id="cropCloseBtn">關閉</button>
+          </div>
+          <div class="cropBody">
+            <div class="cropStage" id="cropStage">
+              <img class="cropImg" id="cropImg" alt="">
+              <div class="cropFrame" id="cropFrame"></div>
+            </div>
+            <div class="cropHint">拖曳圖片調整位置，使用縮放滑桿調整大小。主圖固定 4:5，小頭像固定正方形。</div>
+            <div class="cropControls">
+              <label for="cropZoom">縮放</label>
+              <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1">
+            </div>
+            <div class="cropActions">
+              <button class="pill" type="button" id="cropCancelBtn">取消</button>
+              <button class="pill primary" type="button" id="cropApplyBtn">套用裁切</button>
+            </div>
+          </div>`;
+        document.body.appendChild(dlg);
+      }
+
+      function openCropperV30(file, mode, onDone){
+        ensureCropDialogV30();
+        if(!file) return;
+        const ratio = mode === "cover" ? 4/5 : 1;
+        const cropDialog = getEl("cropDialog");
+        const cropStage = getEl("cropStage");
+        const cropImg = getEl("cropImg");
+        const cropFrame = getEl("cropFrame");
+        const cropZoom = getEl("cropZoom");
+        getEl("cropTitle").textContent = mode === "cover" ? "裁切紀念日主圖 4:5" : "裁切小頭像 1:1";
+        cropFrame.classList.toggle("avatarFrame", mode !== "cover");
+
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          const img = new Image();
+          img.onload = ()=>{
+            cropImg.src = reader.result;
+            cropStateV30 = {
+              mode, ratio, img, onDone,
+              naturalW:img.naturalWidth, naturalH:img.naturalHeight,
+              minScale:1, scale:1, x:0, y:0,
+              dragging:false, startX:0, startY:0, baseX:0, baseY:0
+            };
+            if(typeof cropDialog.showModal === "function") cropDialog.showModal();
+            else cropDialog.setAttribute("open", "open");
+            setTimeout(()=>{
+              const sw = cropStage.clientWidth || 360;
+              const sh = cropStage.clientHeight || 380;
+              let fw = sw * .82;
+              let fh = fw / ratio;
+              if(fh > sh * .82){ fh = sh * .82; fw = fh * ratio; }
+              cropFrame.style.width = fw + "px";
+              cropFrame.style.height = fh + "px";
+              cropStateV30.minScale = Math.max(fw / cropStateV30.naturalW, fh / cropStateV30.naturalH);
+              cropStateV30.scale = cropStateV30.minScale;
+              cropStateV30.x = (sw - cropStateV30.naturalW * cropStateV30.scale) / 2;
+              cropStateV30.y = (sh - cropStateV30.naturalH * cropStateV30.scale) / 2;
+              cropZoom.value = "1";
+              updateCropV30();
+            }, 60);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function updateCropV30(){
+        if(!cropStateV30) return;
+        const cropImg = getEl("cropImg");
+        cropImg.style.width = cropStateV30.naturalW + "px";
+        cropImg.style.height = cropStateV30.naturalH + "px";
+        cropImg.style.transform = `translate(${cropStateV30.x}px, ${cropStateV30.y}px) scale(${cropStateV30.scale})`;
+      }
+
+      function clampCropV30(){
+        if(!cropStateV30) return;
+        const cropStage = getEl("cropStage");
+        const cropFrame = getEl("cropFrame");
+        const stage = cropStage.getBoundingClientRect();
+        const frame = cropFrame.getBoundingClientRect();
+        const fx = frame.left - stage.left, fy = frame.top - stage.top;
+        const fw = frame.width, fh = frame.height;
+        const iw = cropStateV30.naturalW * cropStateV30.scale;
+        const ih = cropStateV30.naturalH * cropStateV30.scale;
+        cropStateV30.x = Math.min(fx, Math.max(fx + fw - iw, cropStateV30.x));
+        cropStateV30.y = Math.min(fy, Math.max(fy + fh - ih, cropStateV30.y));
+      }
+
+      function cropToDataURLV30(){
+        const cropStage = getEl("cropStage");
+        const cropFrame = getEl("cropFrame");
+        const stage = cropStage.getBoundingClientRect();
+        const frame = cropFrame.getBoundingClientRect();
+        const fx = frame.left - stage.left, fy = frame.top - stage.top;
+        const sx = Math.max(0, (fx - cropStateV30.x) / cropStateV30.scale);
+        const sy = Math.max(0, (fy - cropStateV30.y) / cropStateV30.scale);
+        const sw = frame.width / cropStateV30.scale;
+        const sh = frame.height / cropStateV30.scale;
+        const outW = cropStateV30.mode === "cover" ? 1200 : 512;
+        const outH = cropStateV30.mode === "cover" ? 1500 : 512;
+        const canvas = document.createElement("canvas");
+        canvas.width = outW; canvas.height = outH;
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(cropStateV30.img, sx, sy, sw, sh, 0, 0, outW, outH);
+        return canvas.toDataURL("image/jpeg", cropStateV30.mode === "cover" ? .86 : .88);
+      }
+
+      function bindCropperV30(){
+        ensureCropDialogV30();
+        const cropDialog = getEl("cropDialog");
+        const cropStage = getEl("cropStage");
+        const cropZoom = getEl("cropZoom");
+
+        const close = ()=>{
+          if(cropDialog.open && typeof cropDialog.close === "function") cropDialog.close();
+          else cropDialog.removeAttribute("open");
+          cropStateV30 = null;
+        };
+        getEl("cropCloseBtn").onclick = close;
+        getEl("cropCancelBtn").onclick = close;
+        getEl("cropApplyBtn").onclick = ()=>{
+          if(!cropStateV30) return;
+          const cb = cropStateV30.onDone;
+          const data = cropToDataURLV30();
+          close();
+          cb(data);
+        };
+
+        cropZoom.oninput = ()=>{
+          if(!cropStateV30) return;
+          const oldScale = cropStateV30.scale;
+          const newScale = cropStateV30.minScale * Number(cropZoom.value);
+          const stage = cropStage.getBoundingClientRect();
+          const cx = stage.width / 2, cy = stage.height / 2;
+          cropStateV30.x = cx - (cx - cropStateV30.x) * (newScale / oldScale);
+          cropStateV30.y = cy - (cy - cropStateV30.y) * (newScale / oldScale);
+          cropStateV30.scale = newScale;
+          clampCropV30();
+          updateCropV30();
+        };
+
+        const start = (x,y)=>{
+          if(!cropStateV30) return;
+          cropStateV30.dragging = true;
+          cropStateV30.startX = x; cropStateV30.startY = y;
+          cropStateV30.baseX = cropStateV30.x; cropStateV30.baseY = cropStateV30.y;
+        };
+        const move = (x,y)=>{
+          if(!cropStateV30 || !cropStateV30.dragging) return;
+          cropStateV30.x = cropStateV30.baseX + x - cropStateV30.startX;
+          cropStateV30.y = cropStateV30.baseY + y - cropStateV30.startY;
+          clampCropV30();
+          updateCropV30();
+        };
+        const end = ()=>{ if(cropStateV30) cropStateV30.dragging = false; };
+
+        cropStage.onpointerdown = (ev)=>{ start(ev.clientX, ev.clientY); cropStage.setPointerCapture?.(ev.pointerId); };
+        cropStage.onpointermove = (ev)=> move(ev.clientX, ev.clientY);
+        cropStage.onpointerup = end;
+        cropStage.onpointercancel = end;
+
+        cropStage.ontouchstart = (ev)=>{ const t=ev.touches[0]; start(t.clientX,t.clientY); ev.preventDefault(); };
+        cropStage.ontouchmove = (ev)=>{ const t=ev.touches[0]; move(t.clientX,t.clientY); ev.preventDefault(); };
+        cropStage.ontouchend = end;
+      }
+
+      function installUploadOverridesV30(){
+        const cover = getEl("coverInput");
+        const charA = getEl("charAvatarInput");
+        const userA = getEl("userAvatarInput");
+
+        if(cover){
+          cover.onchange = (ev)=>{
+            const file = ev.target.files && ev.target.files[0];
+            if(!file) return;
+            openCropperV30(file, "cover", (data)=>{
+              state.roles[current].cover = data;
+              save(); render();
+              cover.value = "";
+            });
+          };
+        }
+        if(charA){
+          charA.onchange = (ev)=>{
+            const file = ev.target.files && ev.target.files[0];
+            if(!file) return;
+            openCropperV30(file, "avatar", (data)=>{
+              state.roles[current].charAvatar = data;
+              save(); render();
+              charA.value = "";
+            });
+          };
+        }
+        if(userA){
+          userA.onchange = (ev)=>{
+            const file = ev.target.files && ev.target.files[0];
+            if(!file) return;
+            openCropperV30(file, "avatar", (data)=>{
+              state.roles[current].userAvatar = data;
+              save(); render();
+              userA.value = "";
+            });
+          };
+        }
+      }
+
+      window.addEventListener("load", ()=>{
+        bindCropperV30();
+        installUploadOverridesV30();
+      });
+      setTimeout(()=>{ bindCropperV30(); installUploadOverridesV30(); }, 300);
+    })();
+
 
     if("serviceWorker" in navigator){
       window.addEventListener("load",()=> navigator.serviceWorker.register("./sw.js").catch(()=>{}));
