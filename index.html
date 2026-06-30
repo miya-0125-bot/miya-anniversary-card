@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.39</title>
+  <title>角色紀念日卡冊 v0.40</title>
   <style>
     :root{
       color-scheme: light only;
@@ -484,7 +484,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.39 safe inset fix</div>
+        <div class="sub">角色戀愛檔案・v0.40 crop apply fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -625,7 +625,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-39";
+    const STORE_KEY = "miya-anniversary-pwa-v0-40";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -1131,10 +1131,10 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       const stage = cropStage.getBoundingClientRect();
       const frame = cropFrame.getBoundingClientRect();
       const fx = frame.left - stage.left, fy = frame.top - stage.top;
-      const sx = (fx - cropState.x) / cropState.scale;
-      const sy = (fy - cropState.y) / cropState.scale;
-      const sw = frame.width / cropState.scale;
-      const sh = frame.height / cropState.scale;
+      let sx = (fx - cropState.x) / cropState.scale;
+      let sy = (fy - cropState.y) / cropState.scale;
+      let sw = frame.width / cropState.scale;
+      let sh = frame.height / cropState.scale;
       const outW = cropState.mode === "cover" ? 1200 : 512;
       const outH = cropState.mode === "cover" ? 1500 : 512;
       const canvas = document.createElement("canvas");
@@ -1353,10 +1353,10 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
         const stage = cropStage.getBoundingClientRect();
         const frame = cropFrame.getBoundingClientRect();
         const fx = frame.left - stage.left, fy = frame.top - stage.top;
-        const sx = Math.max(0, (fx - cropStateV30.x) / cropStateV30.scale);
-        const sy = Math.max(0, (fy - cropStateV30.y) / cropStateV30.scale);
-        const sw = frame.width / cropStateV30.scale;
-        const sh = frame.height / cropStateV30.scale;
+        let sx = Math.max(0, (fx - cropStateV30.x) / cropStateV30.scale);
+        let sy = Math.max(0, (fy - cropStateV30.y) / cropStateV30.scale);
+        let sw = frame.width / cropStateV30.scale;
+        let sh = frame.height / cropStateV30.scale;
         const outW = cropStateV30.mode === "cover" ? 1200 : 512;
         const outH = cropStateV30.mode === "cover" ? 1500 : 512;
         const canvas = document.createElement("canvas");
