@@ -1,20 +1,24 @@
-# 角色紀念日卡冊 v0.38 cover hairline fix
+# 角色紀念日卡冊 v0.39 safe inset fix
 
-這版只專注修正「主圖放上去後出現黑線」的問題。
+這版針對「主圖如果沒有手動裁一點點，邊界黑線還在；只要稍微裁一下就會消失」做修正。
 
-判斷原因：
-- 這不是空白底卡本身的邊框，而是主圖放進圓角容器後，在 Safari / iPhone 上常見的 1px hairline / halo 問題。
-- 另外原本主圖有 `opacity: .92`，也容易讓底下邊緣色透出。
+原因判斷：
+- 問題不是圖片檔本身壞掉。
+- 而是圖片剛好使用到原圖最邊緣像素時，在縮放 / 重採樣後，Safari / iPhone 容易在圓角邊界出現細黑線。
+- 妳手動裁一點點就正常，代表只要不要吃到最外圈邊緣像素，問題就會消失。
 
 本版處理：
-- 主圖 opacity 改為 1。
-- 主圖明確套用 `border-radius: inherit`。
-- 加上 `clip-path` / `-webkit-mask-image` / `translateZ(0)`，避免 iOS Safari 圓角裁切時出現黑色細線。
-- 主圖存在時，hero 外框與陰影一律關閉。
+- 新增 `applySafeInsetRect()`。
+- 不管是主圖 4:5，還是頭像 1:1，在輸出成最終 JPEG 時，都會自動往內縮一個非常小、肉眼幾乎看不出的安全邊界。
+- 也就是說：就算妳什麼都不調，直接按「套用裁切」，系統也會偷偷幫妳做極小幅安全內縮，避免黑線。
+
+重點：
+- 視覺上幾乎看不出差別。
+- 但能避免「不手動裁就有黑線，手動裁一點點就正常」的情況。
 
 GitHub 覆蓋：
 - index.html
-- manifest.webmanifest
 - sw.js
+- manifest.webmanifest
 - icon.svg
 - README.md

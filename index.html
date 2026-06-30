@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.38</title>
+  <title>角色紀念日卡冊 v0.39</title>
   <style>
     :root{
       color-scheme: light only;
@@ -484,7 +484,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.38 cover hairline fix</div>
+        <div class="sub">角色戀愛檔案・v0.39 safe inset fix</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -625,7 +625,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-38";
+    const STORE_KEY = "miya-anniversary-pwa-v0-39";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -801,6 +801,17 @@
       });
     }
 
+    function applySafeInsetRect(sx, sy, sw, sh, strength = 0.002){
+      const inset = Math.max(1.5, Math.min(sw, sh) * strength);
+      if(sw > inset * 2 && sh > inset * 2){
+        sx += inset;
+        sy += inset;
+        sw -= inset * 2;
+        sh -= inset * 2;
+      }
+      return {sx, sy, sw, sh};
+    }
+
     async function cropImageToDataURL(file, targetRatio, maxW, maxH, quality=0.84){
       if(!file) return "";
       const img = await new Promise((resolve, reject)=>{
@@ -836,6 +847,7 @@
       const ctx = canvas.getContext("2d");
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
+      ({sx, sy, sw, sh} = applySafeInsetRect(sx, sy, sw, sh, targetRatio === 4/5 ? 0.0022 : 0.0015));
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
       URL.revokeObjectURL(img.src);
       return canvas.toDataURL("image/jpeg", quality);
@@ -1352,6 +1364,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
         const ctx = canvas.getContext("2d");
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
+        ({sx, sy, sw, sh} = applySafeInsetRect(sx, sy, sw, sh, cropStateV30.mode === "cover" ? 0.0022 : 0.0015));
         ctx.drawImage(cropStateV30.img, sx, sy, sw, sh, 0, 0, outW, outH);
         return canvas.toDataURL("image/jpeg", cropStateV30.mode === "cover" ? .86 : .88);
       }
