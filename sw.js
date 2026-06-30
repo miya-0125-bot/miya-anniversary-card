@@ -1,4 +1,4 @@
-const CACHE = "anniversary-card-v0-44";
+const CACHE = "anniversary-card-v0-45";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", event => {
   self.skipWaiting();

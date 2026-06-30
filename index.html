@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.44</title>
+  <title>角色紀念日卡冊 v0.45</title>
   <style>
     :root{
       color-scheme: light only;
@@ -484,7 +484,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.44</div>
+        <div class="sub">角色戀愛檔案・v0.45</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -625,7 +625,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-44";
+    const STORE_KEY = "miya-anniversary-pwa-v0-45";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -737,13 +737,18 @@
       setTimeout(()=>{ heroScroll.scrollTop = 0; }, 60);
     }
 
-    // v0.44 public-safe default cleanup
+
+    function defaultRoleName(i=current){
+      return `角色 ${String(i+1).padStart(2,"0")}`;
+    }
+
+    // v0.45 public-safe default cleanup
     function sanitizePublicDefaults(){
       try{
         state.roles.forEach((r, i)=>{
           if(!r) return;
           if(!(r.userName || "").trim()) r.userName = "主控";
-          if(!(r.charName || "").trim()) r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
+          if(!(r.charName || "").trim()) r.charName = defaultRoleName(i);
         });
         save();
       }catch(e){}
@@ -753,13 +758,13 @@
       try{
         document.querySelectorAll(".sub").forEach(el=>{
           if(el.textContent && el.textContent.includes("角色戀愛檔案")){
-            el.textContent = "角色戀愛檔案・v0.44";
+            el.textContent = "角色戀愛檔案・v0.45";
           }
         });
         state.roles.forEach((r, i)=>{
           if(!r) return;
           if(!(r.userName || "").trim()) r.userName = "主控";
-          if(!(r.charName || "").trim()) r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
+          if(!(r.charName || "").trim()) r.charName = defaultRoleName(i);
         });
         save();
       }catch(e){}
@@ -822,7 +827,7 @@
         item.innerHTML = `
           <span class="mini">${r.charAvatar ? `<img src="${r.charAvatar}">` : "♡"}</span>
           <span>
-            <div class="roleMain">${String(i+1).padStart(2,"0")}・${r.charName || "空位"}</div>
+            <div class="roleMain">${String(i+1).padStart(2,"0")}・${r.charName || defaultRoleName(i)}</div>
             <div class="roleSub">${r.events?.length || 0} 個紀念日｜${r.theme || "theme"}</div>
           </span>`;
         item.onclick = ()=>{ current = i; save(); rolePickerDialog.close(); render(); };
@@ -981,7 +986,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       ev.preventDefault();
       const r = state.roles[current];
       r.userName = userNameInput.value || "主控";
-      r.charName = charNameInput.value || `角色 ${String(current+1).padStart(2,"0")}`;
+      r.charName = charNameInput.value || defaultRoleName(current);
       r.theme = themeInput.value || "sakura";
 
       const ua = await cropImageToDataURL(userAvatarInput.files[0], 1, 320, 320, 0.86); if(ua) r.userAvatar = ua;
