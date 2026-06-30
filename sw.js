@@ -1,6 +1,15 @@
-// v0.28 測試期：不快取，避免手機吃舊檔。
-self.addEventListener("install", event => self.skipWaiting());
-self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => caches.delete(key)))).then(() => self.clients.claim()));
+const CACHE = "anniversary-card-v0-29";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
+self.addEventListener("install", event => {
+  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
 });
-self.addEventListener("fetch", event => event.respondWith(fetch(event.request)));
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+self.addEventListener("fetch", event => {
+  event.respondWith(caches.match(event.request).then(res => res || fetch(event.request)));
+});
