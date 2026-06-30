@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.41</title>
+  <title>角色紀念日卡冊 v0.42</title>
   <style>
     :root{
       color-scheme: light only;
@@ -484,7 +484,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.41</div>
+        <div class="sub">角色戀愛檔案・v0.42</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -625,7 +625,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-41";
+    const STORE_KEY = "miya-anniversary-pwa-v0-42";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -737,15 +737,28 @@
       setTimeout(()=>{ heroScroll.scrollTop = 0; }, 60);
     }
 
+
+    // v0.42 privacy cleanup: replace old personal fallback defaults with generic public-safe names
+    function sanitizePublicDefaults(){
+      try{
+        state.roles.forEach((r, i)=>{
+          if(!r) return;
+          if(r.userName === "Miya" || r.userName === "Miya / 恩雅") r.userName = "主控";
+          if(r.charName === "凌辰" || r.charName === "恩雅") r.charName = `角色 ${String(i+1).padStart(2,"0")}`;
+        });
+        save();
+      }catch(e){}
+    }
+
     function render(){
       const role = state.roles[current];
       applyTheme(role.theme || "sakura");
 
       const mini = document.getElementById("currentRoleMini");
       setImgOrText(mini, role.charAvatar, "♡");
-      document.getElementById("currentRoleText").textContent = role.charName || `角色 ${current+1}`;
+      document.getElementById("currentRoleText").textContent = role.charName || `角色 ${String(current+1).padStart(2,"0")}`;
 
-      document.getElementById("roleName").textContent = `${role.charName || "角色"} × ${role.userName || "Miya"}`;
+      document.getElementById("roleName").textContent = `${role.charName || "角色"} × ${role.userName || "主控"}`;
       setImgOrText(document.getElementById("charAvatar"), role.charAvatar, role.charName?.slice(0,2) || "他");
       setImgOrText(document.getElementById("userAvatar"), role.userAvatar, role.userName?.slice(0,2) || "妳");
       document.getElementById("avatarNote").textContent = `${role.charName || "角色"} × ${role.userName || "主控"}`;
@@ -951,9 +964,9 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
     document.getElementById("saveRoleBtn").onclick = async (ev)=>{
       ev.preventDefault();
       const r = state.roles[current];
-      r.userName = userNameInput.value || "Miya";
-      r.charName = charNameInput.value || `角色 ${current+1}`;
-      r.theme = themeInput.value || "midnight";
+      r.userName = userNameInput.value || "主控";
+      r.charName = charNameInput.value || `角色 ${String(current+1).padStart(2,"0")}`;
+      r.theme = themeInput.value || "sakura";
 
       const ua = await cropImageToDataURL(userAvatarInput.files[0], 1, 320, 320, 0.86); if(ua) r.userAvatar = ua;
       const ca = await cropImageToDataURL(charAvatarInput.files[0], 1, 320, 320, 0.86); if(ca) r.charAvatar = ca;
@@ -1487,6 +1500,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
     }
     window.addEventListener("load", resetHeroScroll);
     window.addEventListener("pageshow", resetHeroScroll);
+    sanitizePublicDefaults();
     render();
   </script>
 </body>
