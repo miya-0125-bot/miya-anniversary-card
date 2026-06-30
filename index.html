@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.34</title>
+  <title>角色紀念日卡冊 v0.35</title>
   <style>
     :root{
       color-scheme: light only;
@@ -324,6 +324,54 @@
       line-height:1.45;
     }
 
+  
+    /* v0.35 image upload UI */
+    .hiddenFile{
+      position:absolute!important;
+      width:1px!important;height:1px!important;
+      opacity:0!important;overflow:hidden!important;
+      pointer-events:none!important;
+    }
+    .fileRow.imageRow{
+      display:grid;
+      grid-template-columns:1fr 1fr auto;
+      gap:8px;
+      align-items:center;
+    }
+    .fileBtn{
+      display:inline-flex!important;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      min-height:38px;
+      margin:0;
+      background:var(--panel2)!important;
+      color:var(--text)!important;
+      border:1px solid var(--border)!important;
+      box-shadow:none!important;
+    }
+    .danger{
+      background:color-mix(in srgb, var(--accent) 12%, transparent)!important;
+      color:var(--accent)!important;
+      border:1px solid color-mix(in srgb, var(--accent) 34%, var(--border))!important;
+    }
+    .smallBtn:disabled{
+      cursor:not-allowed;
+      opacity:.42;
+      background:rgba(255,255,255,.04)!important;
+      color:var(--muted)!important;
+      border:1px solid var(--border)!important;
+    }
+    .cropPickedStatus{
+      justify-content:center;
+      margin-left:0!important;
+      min-height:30px;
+      background:rgba(255,255,255,.38)!important;
+      color:var(--accent)!important;
+      border:1px solid color-mix(in srgb, var(--accent) 24%, var(--border))!important;
+    }
+    .cropStaticNote,.hint{display:none!important}
+
   </style>
 </head>
 <body class="theme-sakura">
@@ -331,7 +379,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.34 crop delete ui</div>
+        <div class="sub">角色戀愛檔案・v0.35 final ui</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -402,10 +450,9 @@
         <div><label>角色名稱</label><input id="charNameInput" placeholder="凌辰"></div>
         <div><label>主控名稱</label><input id="userNameInput" placeholder="Miya / 恩雅"></div>
       </div>
-      <label>角色小頭像</label><div class="fileRow triple"><input type="file" accept="image/*" id="charAvatarInput"><button class="smallBtn danger" type="button" id="deleteCharAvatarBtn">刪除圖片</button></div>
-      <label>主控小頭像</label><div class="fileRow triple"><input type="file" accept="image/*" id="userAvatarInput"><button class="smallBtn danger" type="button" id="deleteUserAvatarBtn">刪除圖片</button></div>
-      <label>中間紀念日圖</label><div class="fileRow triple"><input type="file" accept="image/*" id="coverInput"><button class="smallBtn danger" type="button" id="deleteCoverBtn">刪除圖片</button></div>
-      <div class="hint">這版會自動把主圖置中裁切為 4:5，並壓縮到適合瀏覽器儲存的大小。小頭像會裁切成正方形。<div class="cropStaticNote">已把「未選擇任何檔案」的文字隱藏；是否已有圖片，請看旁邊的「已套用裁切」提示。刪除圖片後，提示也會一起消失。</div></div>
+      <label>角色小頭像</label><div class="fileRow imageRow"><input class="hiddenFile" type="file" accept="image/*" id="charAvatarInput"><label class="smallBtn fileBtn" for="charAvatarInput">選擇圖片</label><button class="smallBtn danger" type="button" id="deleteCharAvatarBtn">刪除圖片</button></div>
+      <label>主控小頭像</label><div class="fileRow imageRow"><input class="hiddenFile" type="file" accept="image/*" id="userAvatarInput"><label class="smallBtn fileBtn" for="userAvatarInput">選擇圖片</label><button class="smallBtn danger" type="button" id="deleteUserAvatarBtn">刪除圖片</button></div>
+      <label>中間紀念日圖</label><div class="fileRow imageRow"><input class="hiddenFile" type="file" accept="image/*" id="coverInput"><label class="smallBtn fileBtn" for="coverInput">選擇圖片</label><button class="smallBtn danger" type="button" id="deleteCoverBtn">刪除圖片</button></div>
       <label>主題底色 / 邊框感</label>
       <select id="themeInput">
         <option value="midnight">深夜暗幕・戀人微光</option>
@@ -473,7 +520,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-34";
+    const STORE_KEY = "miya-anniversary-pwa-v0-35";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -753,28 +800,35 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       charNameInput.value = r.charName || "";
       themeInput.value = r.theme || "sakura";
       userAvatarInput.value = ""; charAvatarInput.value = ""; coverInput.value = "";
+      applyTheme(r.theme || "sakura");
       roleDialog.showModal();
       syncRoleImageUi();
     };
     document.getElementById("deleteCoverBtn").onclick = ()=>{
       const r = state.roles[current];
+      r.theme = themeInput.value || r.theme || "sakura";
       r.cover = "";
       coverInput.value = "";
       save(); render();
+      applyTheme(r.theme);
       syncRoleImageUi();
     };
     document.getElementById("deleteCharAvatarBtn").onclick = ()=>{
       const r = state.roles[current];
+      r.theme = themeInput.value || r.theme || "sakura";
       r.charAvatar = "";
       charAvatarInput.value = "";
       save(); render();
+      applyTheme(r.theme);
       syncRoleImageUi();
     };
     document.getElementById("deleteUserAvatarBtn").onclick = ()=>{
       const r = state.roles[current];
+      r.theme = themeInput.value || r.theme || "sakura";
       r.userAvatar = "";
       userAvatarInput.value = "";
       save(); render();
+      applyTheme(r.theme);
       syncRoleImageUi();
     };
     document.getElementById("saveRoleBtn").onclick = async (ev)=>{
