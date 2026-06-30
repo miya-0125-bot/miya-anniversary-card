@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.33</title>
+  <title>角色紀念日卡冊 v0.34</title>
   <style>
     :root{
       color-scheme: light only;
@@ -162,7 +162,13 @@
       color-scheme: light only;
     }
     option{background:var(--panel); color:var(--text)}
-    input[type="file"]{font-size:12px; padding:9px}
+
+    input[type="file"]{font-size:12px; padding:9px; color:transparent}
+    input[type="file"]::file-selector-button{margin-right:10px; border:1px solid var(--border); background:rgba(255,255,255,.08); color:var(--text); border-radius:10px; padding:7px 10px; cursor:pointer}
+    input[type="file"]::-webkit-file-upload-button{margin-right:10px; border:1px solid var(--border); background:rgba(255,255,255,.08); color:var(--text); border-radius:10px; padding:7px 10px; cursor:pointer}
+    .fileRow.triple{grid-template-columns:1fr auto auto}
+    .smallBtn:disabled{cursor:not-allowed; opacity:.45; background:rgba(255,255,255,.05)!important; color:var(--muted)!important; border:1px solid var(--border)!important}
+
     .fileRow{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center}
     .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:16px}
     .primary{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; border:0}
@@ -325,7 +331,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.33 crop status</div>
+        <div class="sub">角色戀愛檔案・v0.34 crop delete ui</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -396,10 +402,10 @@
         <div><label>角色名稱</label><input id="charNameInput" placeholder="凌辰"></div>
         <div><label>主控名稱</label><input id="userNameInput" placeholder="Miya / 恩雅"></div>
       </div>
-      <label>角色小頭像</label><input type="file" accept="image/*" id="charAvatarInput">
-      <label>主控小頭像</label><input type="file" accept="image/*" id="userAvatarInput">
-      <label>中間紀念日圖</label><div class="fileRow"><input type="file" accept="image/*" id="coverInput"><button class="smallBtn danger" type="button" id="deleteCoverBtn">刪除圖片</button></div>
-      <div class="hint">這版會自動把主圖置中裁切為 4:5，並壓縮到適合瀏覽器儲存的大小。小頭像會裁切成正方形。<div class="cropStaticNote">裁切後檔案欄位仍會顯示「未選擇任何檔案」，這是瀏覽器限制；請看旁邊的「已套用裁切」提示。</div></div>
+      <label>角色小頭像</label><div class="fileRow triple"><input type="file" accept="image/*" id="charAvatarInput"><button class="smallBtn danger" type="button" id="deleteCharAvatarBtn">刪除圖片</button></div>
+      <label>主控小頭像</label><div class="fileRow triple"><input type="file" accept="image/*" id="userAvatarInput"><button class="smallBtn danger" type="button" id="deleteUserAvatarBtn">刪除圖片</button></div>
+      <label>中間紀念日圖</label><div class="fileRow triple"><input type="file" accept="image/*" id="coverInput"><button class="smallBtn danger" type="button" id="deleteCoverBtn">刪除圖片</button></div>
+      <div class="hint">這版會自動把主圖置中裁切為 4:5，並壓縮到適合瀏覽器儲存的大小。小頭像會裁切成正方形。<div class="cropStaticNote">已把「未選擇任何檔案」的文字隱藏；是否已有圖片，請看旁邊的「已套用裁切」提示。刪除圖片後，提示也會一起消失。</div></div>
       <label>主題底色 / 邊框感</label>
       <select id="themeInput">
         <option value="midnight">深夜暗幕・戀人微光</option>
@@ -467,7 +473,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-33";
+    const STORE_KEY = "miya-anniversary-pwa-v0-34";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -747,15 +753,29 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       charNameInput.value = r.charName || "";
       themeInput.value = r.theme || "sakura";
       userAvatarInput.value = ""; charAvatarInput.value = ""; coverInput.value = "";
-      deleteCoverBtn.disabled = !r.cover;
       roleDialog.showModal();
+      syncRoleImageUi();
     };
     document.getElementById("deleteCoverBtn").onclick = ()=>{
       const r = state.roles[current];
       r.cover = "";
       coverInput.value = "";
       save(); render();
-      deleteCoverBtn.disabled = true;
+      syncRoleImageUi();
+    };
+    document.getElementById("deleteCharAvatarBtn").onclick = ()=>{
+      const r = state.roles[current];
+      r.charAvatar = "";
+      charAvatarInput.value = "";
+      save(); render();
+      syncRoleImageUi();
+    };
+    document.getElementById("deleteUserAvatarBtn").onclick = ()=>{
+      const r = state.roles[current];
+      r.userAvatar = "";
+      userAvatarInput.value = "";
+      save(); render();
+      syncRoleImageUi();
     };
     document.getElementById("saveRoleBtn").onclick = async (ev)=>{
       ev.preventDefault();
@@ -768,7 +788,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
       const ca = await cropImageToDataURL(charAvatarInput.files[0], 1, 320, 320, 0.86); if(ca) r.charAvatar = ca;
       const co = await cropImageToDataURL(coverInput.files[0], 4/5, 960, 1200, 0.84); if(co) r.cover = co;
 
-      save(); roleDialog.close(); render();
+      save(); syncRoleImageUi(); roleDialog.close(); render();
     };
 
     const eventDialog = document.getElementById("eventDialog");
@@ -1004,29 +1024,54 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
 
     bindCropperOnce();
 
-
-
-    // v0.33: safe crop status helper. No render hook, no observer.
+    // v0.34: crop status + delete button sync helpers
     function ensureCropPickedStatus(){
-      ["charAvatarInput","userAvatarInput","coverInput"].forEach(id=>{
+      const map = [
+        ["charAvatarInput","deleteCharAvatarBtn"],
+        ["userAvatarInput","deleteUserAvatarBtn"],
+        ["coverInput","deleteCoverBtn"]
+      ];
+      map.forEach(([id, delId])=>{
         const input = document.getElementById(id);
-        if(!input || document.getElementById(id+"Status")) return;
-        const span = document.createElement("span");
-        span.id = id + "Status";
-        span.className = "cropPickedStatus";
-        span.textContent = "已套用裁切";
-        input.insertAdjacentElement("afterend", span);
+        if(!input) return;
+        if(!document.getElementById(id+"Status")){
+          const span = document.createElement("span");
+          span.id = id + "Status";
+          span.className = "cropPickedStatus";
+          span.textContent = "已套用裁切";
+          const btn = delId ? document.getElementById(delId) : null;
+          if(btn) btn.insertAdjacentElement("afterend", span);
+          else input.insertAdjacentElement("afterend", span);
+        }
       });
     }
 
-    function showCropPickedStatus(inputId){
+    function setCropPickedStatus(inputId, show){
       ensureCropPickedStatus();
       const el = document.getElementById(inputId+"Status");
-      if(el) el.classList.add("show");
+      if(!el) return;
+      el.classList.toggle("show", !!show);
     }
 
-    window.addEventListener("load", ensureCropPickedStatus);
-    setTimeout(ensureCropPickedStatus, 300);
+    function syncRoleImageUi(){
+      ensureCropPickedStatus();
+      const r = state.roles[current] || {};
+      const hasChar = !!r.charAvatar;
+      const hasUser = !!r.userAvatar;
+      const hasCover = !!r.cover;
+      const charBtn = document.getElementById("deleteCharAvatarBtn");
+      const userBtn = document.getElementById("deleteUserAvatarBtn");
+      const coverBtn = document.getElementById("deleteCoverBtn");
+      if(charBtn) charBtn.disabled = !hasChar;
+      if(userBtn) userBtn.disabled = !hasUser;
+      if(coverBtn) coverBtn.disabled = !hasCover;
+      setCropPickedStatus("charAvatarInput", hasChar);
+      setCropPickedStatus("userAvatarInput", hasUser);
+      setCropPickedStatus("coverInput", hasCover);
+    }
+
+    window.addEventListener("load", ()=>{ ensureCropPickedStatus(); syncRoleImageUi(); });
+    setTimeout(()=>{ ensureCropPickedStatus(); syncRoleImageUi(); }, 300);
 
 
     // v0.33 robust cropper override
@@ -1223,8 +1268,9 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "cover", (data)=>{
               state.roles[current].cover = data;
               save();
-              showCropPickedStatus("coverInput");
+              setCropPickedStatus("coverInput", true);
               cover.value = "";
+              syncRoleImageUi();
             });
           };
         }
@@ -1235,8 +1281,9 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "avatar", (data)=>{
               state.roles[current].charAvatar = data;
               save();
-              showCropPickedStatus("charAvatarInput");
+              setCropPickedStatus("charAvatarInput", true);
               charA.value = "";
+              syncRoleImageUi();
             });
           };
         }
@@ -1247,8 +1294,9 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "avatar", (data)=>{
               state.roles[current].userAvatar = data;
               save();
-              showCropPickedStatus("userAvatarInput");
+              setCropPickedStatus("userAvatarInput", true);
               userA.value = "";
+              syncRoleImageUi();
             });
           };
         }
