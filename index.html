@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#fff4f7" />
   <link rel="manifest" href="manifest.webmanifest">
-  <title>角色紀念日卡冊 v0.30</title>
+  <title>角色紀念日卡冊 v0.31</title>
   <style>
     :root{
       color-scheme: light only;
@@ -297,6 +297,15 @@
     .cropActions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
     .cropActions .pill{padding:10px 14px}
 
+  
+    .pickedLabel{
+      display:inline-flex; align-items:center; margin-left:8px; padding:3px 8px;
+      border-radius:999px; font-size:12px; font-weight:700;
+      color:var(--accent); background:rgba(255,255,255,.42); border:1px solid var(--border);
+      vertical-align:middle;
+    }
+    .pickedLabel:not(.show){display:none}
+
   </style>
 </head>
 <body class="theme-sakura">
@@ -304,7 +313,7 @@
     <div class="topbar">
       <div>
         <div class="title">紀念日卡冊</div>
-        <div class="sub">角色戀愛檔案・v0.30 crop fix</div>
+        <div class="sub">角色戀愛檔案・v0.31 crop label</div>
       </div>
       <div class="topActions">
         <button class="roleChip" id="chooseRoleBtn" title="切換角色">
@@ -446,7 +455,7 @@
 
   <script>
     const MAX = 10;
-    const STORE_KEY = "miya-anniversary-pwa-v0-30";
+    const STORE_KEY = "miya-anniversary-pwa-v0-31";
     let state = load();
     let current = state.current || 0;
     let editingEventIndex = null;
@@ -1178,6 +1187,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "cover", (data)=>{
               state.roles[current].cover = data;
               save(); render();
+              setTimeout(()=>{ const el=document.getElementById("coverInputPickedLabel"); if(el){el.textContent="已套用裁切圖片"; el.classList.add("show");}},0);
               cover.value = "";
             });
           };
@@ -1189,6 +1199,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "avatar", (data)=>{
               state.roles[current].charAvatar = data;
               save(); render();
+              setTimeout(()=>{ const el=document.getElementById("charAvatarInputPickedLabel"); if(el){el.textContent="已套用裁切圖片"; el.classList.add("show");}},0);
               charA.value = "";
             });
           };
@@ -1200,6 +1211,7 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
             openCropperV30(file, "avatar", (data)=>{
               state.roles[current].userAvatar = data;
               save(); render();
+              setTimeout(()=>{ const el=document.getElementById("userAvatarInputPickedLabel"); if(el){el.textContent="已套用裁切圖片"; el.classList.add("show");}},0);
               userA.value = "";
             });
           };
@@ -1211,6 +1223,63 @@ const rolePickerDialog = document.getElementById("rolePickerDialog");
         installUploadOverridesV30();
       });
       setTimeout(()=>{ bindCropperV30(); installUploadOverridesV30(); }, 300);
+    })();
+
+
+
+    // v0.31: after crop is applied, browser file inputs cannot display a programmatically-created cropped image filename.
+    // So we show a clear selected-status label next to each upload field.
+    (function(){
+      function makePickedLabel(inputId, text){
+        const input = document.getElementById(inputId);
+        if(!input) return null;
+        let label = document.getElementById(inputId + "PickedLabel");
+        if(!label){
+          label = document.createElement("span");
+          label.id = inputId + "PickedLabel";
+          label.className = "pickedLabel";
+          label.textContent = "";
+          input.insertAdjacentElement("afterend", label);
+        }
+        if(text){
+          label.textContent = text;
+          label.classList.add("show");
+        }else{
+          label.textContent = "";
+          label.classList.remove("show");
+        }
+        return label;
+      }
+
+      function refreshPickedLabels(){
+        try{
+          const role = state.roles[current] || {};
+          makePickedLabel("charAvatarInput", role.charAvatar ? "已套用裁切圖片" : "");
+          makePickedLabel("userAvatarInput", role.userAvatar ? "已套用裁切圖片" : "");
+          makePickedLabel("coverInput", role.cover ? "已套用裁切圖片" : "");
+        }catch(e){}
+      }
+
+      function hookRenderForPickedLabels(){
+        if(window.__pickedLabelRenderHooked) return;
+        window.__pickedLabelRenderHooked = true;
+        const oldRender = render;
+        render = function(){
+          oldRender.apply(this, arguments);
+          setTimeout(refreshPickedLabels, 0);
+        };
+      }
+
+      function installPickedLabelFix(){
+        hookRenderForPickedLabels();
+        refreshPickedLabels();
+
+        const obs = new MutationObserver(()=> refreshPickedLabels());
+        obs.observe(document.body, {childList:true, subtree:true});
+      }
+
+      window.addEventListener("load", installPickedLabelFix);
+      setTimeout(installPickedLabelFix, 500);
     })();
 
 
